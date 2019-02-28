@@ -19,6 +19,11 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
+    public Iterable<Flight> findAll() {
+        return flightRepository.findAll();
+    }
+
+    @Override
     public Flight save(Flight object) {
         return flightRepository.save(object);
     }
