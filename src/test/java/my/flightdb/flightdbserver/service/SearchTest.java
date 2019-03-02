@@ -1,5 +1,6 @@
 package my.flightdb.flightdbserver.service;
 
+import com.querydsl.core.types.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import my.flightdb.flightdbserver.model.Flight;
 import org.junit.Before;
@@ -24,6 +25,8 @@ import static org.junit.Assert.assertTrue;
 public class SearchTest {
     @Autowired
     FlightService flightService;
+
+    PredicateBuilder predicateBuilder = new PredicateBuilder();
 
     final String F1_TAIL = "XYZ01";
     final String F1_TYPE = "Cessna 172";
@@ -61,7 +64,8 @@ public class SearchTest {
     @Test
     public void searchWithoutParamsShouldGetAll() {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        List<Flight> actual = flightService.search(params);
+        Predicate predicate = predicateBuilder.buildFlightPredicate(params);
+        List<Flight> actual = flightService.search(predicate);
         assertEquals(3, actual.size());
     }
 
@@ -69,7 +73,8 @@ public class SearchTest {
     public void searchWithOneTypeShouldWork() {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.set("aircraftType", "Cessna 172");
-        List<Flight> actual = flightService.search(params);
+        Predicate predicate = predicateBuilder.buildFlightPredicate(params);
+        List<Flight> actual = flightService.search(predicate);
         assertEquals(1, actual.size());
         assertEquals(F1_TAIL, actual.get(0).getTailNumber());
     }
@@ -79,7 +84,8 @@ public class SearchTest {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("aircraftType", "Cessna 172");
         params.add("aircraftType", "");
-        List<Flight> actual = flightService.search(params);
+        Predicate predicate = predicateBuilder.buildFlightPredicate(params);
+        List<Flight> actual = flightService.search(predicate);
         assertEquals(2, actual.size());
         List<String> tailNos = new ArrayList<>();
         actual.forEach((item) -> tailNos.add(item.getTailNumber()));
@@ -93,7 +99,8 @@ public class SearchTest {
         params.add("aircraftType", F1_TYPE);
         params.add("aircraftType", F2_TYPE);
         params.add("tailNumber", F2_TAIL);
-        List<Flight> actual = flightService.search(params);
+        Predicate predicate = predicateBuilder.buildFlightPredicate(params);
+        List<Flight> actual = flightService.search(predicate);
         assertEquals(1, actual.size());
         assertEquals(F2_TAIL, actual.get(0).getTailNumber());
     }
@@ -101,14 +108,16 @@ public class SearchTest {
     @Test
     public void searchWithNoResultShouldWork() {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+
         params.add("aircraftType", F1_TAIL);
-        List<Flight> actual = flightService.search(params);
+        Predicate predicate = predicateBuilder.buildFlightPredicate(params);
+        List<Flight> actual = flightService.search(predicate);
         assertEquals(0, actual.size());
 
         params.clear();
         params.add("aircraftType", F1_TYPE);
         params.add("tailNumber", F2_TAIL);
-        actual = flightService.search(params);
+        actual = flightService.search(predicate);
         assertEquals(0, actual.size());
     }
 }
