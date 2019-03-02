@@ -8,9 +8,9 @@ import org.springframework.util.MultiValueMap;
 
 import java.util.List;
 
-public class PredicateBuilder {
+public class FlightPredicate {
 
-    public Predicate buildFlightPredicate(MultiValueMap<String, String> params) {
+    public static Predicate build(MultiValueMap<String, String> params) {
         BooleanBuilder searchBuilder = new BooleanBuilder();
 
         String[] fields = { "aircraftType", "tailNumber" };
@@ -22,7 +22,7 @@ public class PredicateBuilder {
         return searchBuilder;
     }
 
-    private Predicate buildFlightOrPredicate(String field, List<String> values) {
+    private static Predicate buildFlightOrPredicate(String field, List<String> values) {
         PathBuilder<Flight> entityPath = new PathBuilder<>(Flight.class, "flight");
         BooleanBuilder builder = new BooleanBuilder();
         for (String val : values) {

@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import my.flightdb.flightdbserver.model.SearchResult;
 import my.flightdb.flightdbserver.repository.FlightDataRepository;
 import my.flightdb.flightdbserver.service.FlightService;
-import my.flightdb.flightdbserver.service.PredicateBuilder;
+import my.flightdb.flightdbserver.service.FlightPredicate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
@@ -18,7 +18,7 @@ public class FlightRestController {
 
     FlightDataRepository flightDataRepository;
 
-    PredicateBuilder predicateBuilder = new PredicateBuilder();
+    FlightPredicate predicateBuilder = new FlightPredicate();
 
     public FlightRestController(FlightService flightService, FlightDataRepository flightDataRepository) {
         this.flightService = flightService;
@@ -28,7 +28,7 @@ public class FlightRestController {
     public ResponseEntity<SearchResult> search(@RequestParam MultiValueMap<String, String> allRequestParams) {
         log.info("FlightRestController.search called");
 
-        Predicate predicate = predicateBuilder.buildFlightPredicate(allRequestParams);
+        Predicate predicate = FlightPredicate.build(allRequestParams);
         Long count = flightService.count(predicate);
         if (count > 0) {
             SearchResult result = new SearchResult();

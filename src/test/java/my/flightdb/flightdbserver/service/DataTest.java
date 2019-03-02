@@ -106,7 +106,7 @@ public class DataTest {
     }
 
     @Test
-    public void databaseShouldBeEmpty() {
+    public void countShouldBeValid() {
         Long actual = flightService.count();
         assertEquals(Long.valueOf(2L), actual);
     }
