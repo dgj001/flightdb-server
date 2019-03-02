@@ -8,17 +8,17 @@ import my.flightdb.flightdbserver.service.FlightService;
 import my.flightdb.flightdbserver.service.FlightPredicate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestParam;
 
+@Controller
 @Slf4j
 public class FlightRestController {
 
     FlightService flightService;
 
     FlightDataRepository flightDataRepository;
-
-    FlightPredicate predicateBuilder = new FlightPredicate();
 
     public FlightRestController(FlightService flightService, FlightDataRepository flightDataRepository) {
         this.flightService = flightService;
