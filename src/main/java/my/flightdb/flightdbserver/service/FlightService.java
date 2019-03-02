@@ -11,4 +11,6 @@ public interface FlightService {
     List<Flight> findAll();
     Flight save(Flight object);
     List<Flight> search(Predicate predicate);
+    List<String> findDistinctAircraftTypes();
+    List<String> findDistinctTailNumbers();
 }

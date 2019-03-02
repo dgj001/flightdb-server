@@ -45,4 +45,14 @@ public class FlightServiceImpl implements FlightService {
         flightRepository.findAll(predicate).forEach(flights::add);
         return flights;
     }
+
+    @Override
+    public List<String> findDistinctAircraftTypes() {
+        return flightRepository.findDistinctAircraftTypes();
+    }
+
+    @Override
+    public List<String> findDistinctTailNumbers() {
+        return flightRepository.findDistinctTailNumbers();
+    }
 }
