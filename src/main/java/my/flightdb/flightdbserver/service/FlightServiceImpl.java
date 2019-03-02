@@ -1,6 +1,8 @@
 package my.flightdb.flightdbserver.service;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.PathBuilder;
 import my.flightdb.flightdbserver.model.Flight;
 import my.flightdb.flightdbserver.repository.FlightRepository;
 import org.springframework.stereotype.Service;
@@ -44,9 +46,30 @@ public class FlightServiceImpl implements FlightService {
 
     @Override
     public List<Flight> search(MultiValueMap<String, String> params) {
-        BooleanBuilder searchBuilder = new BooleanBuilder();
         List<Flight> flights = new ArrayList<>();
-        flightRepository.findAll(searchBuilder).forEach(flights::add);
+        Predicate predicate = convertParamsToPredicate(params);
+        flightRepository.findAll(predicate).forEach(flights::add);
         return flights;
+    }
+
+    private Predicate convertParamsToPredicate(MultiValueMap<String, String> params) {
+        BooleanBuilder searchBuilder = new BooleanBuilder();
+
+        String[] fields = { "aircraftType", "tailNumber" };
+        for (String fld : fields) {
+            if (params.containsKey(fld)) {
+                searchBuilder = searchBuilder.and(getOrPredicate(fld, params.get(fld)));
+            }
+        }
+        return searchBuilder;
+    }
+
+    private Predicate getOrPredicate(String field, List<String> values) {
+        PathBuilder<Flight> entityPath = new PathBuilder<>(Flight.class, "flight");
+        BooleanBuilder builder = new BooleanBuilder();
+        for (String val : values) {
+            builder.or(entityPath.getString(field).equalsIgnoreCase(val));
+        }
+        return builder;
     }
 }
