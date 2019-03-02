@@ -1,5 +1,6 @@
 package my.flightdb.flightdbserver.service;
 
+import lombok.extern.slf4j.Slf4j;
 import my.flightdb.flightdbserver.model.Flight;
 import my.flightdb.flightdbserver.model.FlightData;
 import org.junit.Before;
@@ -16,7 +17,8 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class FlightServiceTest {
+@Slf4j
+public class DataTest {
 
     @Autowired
     FlightService flightService;
@@ -24,7 +26,7 @@ public class FlightServiceTest {
     @Autowired
     FlightDataService flightDataService;
 
-    private final String TAIL0 = "XYZ01";
+    private final String TAIL1 = "XYZ01";
     private final String TYPE1 = "Boeing 737";
     private final LocalDateTime DATE1 = LocalDateTime.of(2007, 12, 31, 23, 59, 59);
 
@@ -52,9 +54,13 @@ public class FlightServiceTest {
     private final double DATA_2_LNG_1 = 24.0;
 
     @Before
-    public void setUp() {
+    public void initializeTestRecords() {
+        if (flightService.count() > 0) {
+            return;
+        }
+
         Flight f1 = new Flight();
-        f1.setTailNumber(TAIL0);
+        f1.setTailNumber(TAIL1);
         f1.setAircraftType(TYPE1);
         f1.setStartDateTime(DATE1);
         flightService.save(f1);
@@ -100,17 +106,17 @@ public class FlightServiceTest {
     }
 
     @Test
-    public void flightCount() {
+    public void databaseShouldBeEmpty() {
         Long actual = flightService.count();
         assertEquals(Long.valueOf(2L), actual);
     }
 
     @Test
-    public void flightFields() {
+    public void flightFieldsShouldBeValid() {
         Iterator<Flight> iterator = flightService.findAll().iterator();
 
         Flight flight1 = iterator.next();
-        assertEquals(TAIL0, flight1.getTailNumber());
+        assertEquals(TAIL1, flight1.getTailNumber());
         assertEquals(TYPE1, flight1.getAircraftType());
         assertEquals(DATE1, flight1.getStartDateTime());
 
@@ -121,7 +127,7 @@ public class FlightServiceTest {
     }
 
     @Test
-    public void flightDataFields() {
+    public void flightDataFieldsShouldBeValid() {
         Iterator<FlightData> iterator = flightDataService.findByFlightId(flightId1).iterator();
 
         FlightData data;
@@ -142,7 +148,7 @@ public class FlightServiceTest {
         assertEquals(DATA_1_LNG_2, data.getLongitude(), 0.001);
 
         iterator = flightDataService.findByFlightId(flightId2).iterator();
-        
+
         data = iterator.next();
         assertEquals(flightId2, data.getFlightId());
         assertEquals(DATA_2_TIME_1, data.getTime(), 0.001);
