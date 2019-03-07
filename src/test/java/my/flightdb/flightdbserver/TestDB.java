@@ -7,12 +7,14 @@ import my.flightdb.flightdbserver.service.FlightDataService;
 import my.flightdb.flightdbserver.service.FlightService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Slf4j
 @Component
+@Profile("default")
 public class TestDB implements CommandLineRunner {
 
     @Autowired
