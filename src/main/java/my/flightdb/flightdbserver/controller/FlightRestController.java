@@ -2,11 +2,13 @@ package my.flightdb.flightdbserver.controller;
 
 import com.querydsl.core.types.Predicate;
 import lombok.extern.slf4j.Slf4j;
+import my.flightdb.flightdbserver.model.Grouping;
 import my.flightdb.flightdbserver.model.SearchResult;
 import my.flightdb.flightdbserver.repository.FlightDataRepository;
+import my.flightdb.flightdbserver.repository.GroupingRepository;
 import my.flightdb.flightdbserver.service.FlightService;
 import my.flightdb.flightdbserver.service.FlightPredicate;
-import org.springframework.data.domain.PageRequest;
+import my.flightdb.flightdbserver.service.GroupingService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,9 +31,12 @@ public class FlightRestController {
 
     FlightDataRepository flightDataRepository;
 
-    public FlightRestController(FlightService flightService, FlightDataRepository flightDataRepository) {
+    GroupingService groupingService;
+
+    public FlightRestController(FlightService flightService, FlightDataRepository flightDataRepository, GroupingService groupingService) {
         this.flightService = flightService;
         this.flightDataRepository = flightDataRepository;
+        this.groupingService = groupingService;
     }
 
     @RequestMapping(
@@ -100,6 +105,23 @@ public class FlightRestController {
         List<String> airports = flightService.findDistinctDepartureAirports();
         if (airports.size() > 0) {
             return new ResponseEntity<>(airports, HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @RequestMapping(
+            value = "departure_airport_groupings",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    public ResponseEntity<Collection<Grouping>> departureAirportGroupings(Pageable pageable) {
+        log.info("FlightRestController.departureAirportGroupings called");
+
+        List<Grouping> groupings = groupingService.findAll(pageable);
+        if (groupings.size() > 0) {
+            return new ResponseEntity<>(groupings, HttpStatus.OK);
         }
         else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

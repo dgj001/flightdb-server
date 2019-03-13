@@ -3,7 +3,6 @@ package my.flightdb.flightdbserver.service;
 import com.querydsl.core.types.Predicate;
 import my.flightdb.flightdbserver.model.Flight;
 import my.flightdb.flightdbserver.repository.FlightRepository;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -67,4 +66,5 @@ public class FlightServiceImpl implements FlightService {
     public List<String> findDistinctArrivalAirports() {
         return flightRepository.findDistinctArrivalAirports();
     }
+
 }
