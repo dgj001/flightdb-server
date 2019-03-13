@@ -1,7 +1,11 @@
 package my.flightdb.flightdbserver.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import my.flightdb.flightdbserver.TestDB;
+import my.flightdb.flightdbserver.model.Flight;
 import my.flightdb.flightdbserver.model.SearchResult;
+import my.flightdb.flightdbserver.service.FlightService;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,18 +23,27 @@ import static org.junit.Assert.assertEquals;
 @Transactional
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@Slf4j
 public class PaginationTest {
 
     @Autowired
     FlightRestController controller;
 
     @Autowired
-    TestDB testDB;
+    FlightService service;
+
+    @Before
+    public void loadPaginationTestDB() {
+        log.info("loadPaginationTestDB");
+
+        for (int i = 0; i < 20; i++) {
+            service.save(Flight.builder().tailNumber("tail" + i).build());
+        }
+
+    }
 
     @Test
     public void shouldReturnPaginatedResults() {
-        testDB.createPaginationDB();
-
         int page = 0;
         int size = 3;
 

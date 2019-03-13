@@ -113,36 +113,4 @@ public class TestDB {
         f3.setStartDateTime(DATE3);
         flightService.save(f3);
     }
-
-    public void createPaginationDB() {
-        log.info("TestDB.createPaginationDB");
-
-        for (int i = 0; i < 20; i++) {
-            Flight flight = new Flight();
-            flight.setTailNumber("tail" + i);
-            flightService.save(flight);
-        }
-    }
-
-    public void createDistinctDB() {
-        log.info("TestDB.createDistinctDB");
-
-        Flight flight;
-
-        flight = new Flight();
-        flight.setTailNumber("tail1");
-        flightService.save(flight);
-
-        flight = new Flight();
-        flight.setTailNumber("tail2");
-        flightService.save(flight);
-
-        flight = new Flight();
-        flight.setTailNumber("tail2");
-        flightService.save(flight);
-
-        flight = new Flight();
-        flight.setTailNumber("tail3");
-        flightService.save(flight);
-    }
 }
