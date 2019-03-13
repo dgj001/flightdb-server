@@ -2,13 +2,18 @@ package my.flightdb.flightdbserver.controller;
 
 import my.flightdb.flightdbserver.TestDB;
 import my.flightdb.flightdbserver.model.SearchResult;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -19,15 +24,24 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@Transactional
 public class FlightRestControllerTest {
+
+    @Autowired
+    TestDB testDB;
 
     @Autowired
     FlightRestController controller;
 
+    @Before
+    public void createTestDB() {
+        testDB.createSharedDB();
+    }
+
     @Test
     public void shouldReturnSearchResult() {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        ResponseEntity<SearchResult> response = controller.search(params);
+        ResponseEntity<SearchResult> response = controller.search(params, PageRequest.of(0, 20));
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         SearchResult result = response.getBody();
@@ -39,7 +53,7 @@ public class FlightRestControllerTest {
     public void shouldReturnEmptyResponse() {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("aircraftType", "non-existent type");
-        ResponseEntity<SearchResult> response = controller.search(params);
+        ResponseEntity<SearchResult> response = controller.search(params, PageRequest.of(0, 20));
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }

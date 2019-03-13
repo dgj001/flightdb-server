@@ -6,16 +6,13 @@ import my.flightdb.flightdbserver.model.FlightData;
 import my.flightdb.flightdbserver.service.FlightDataService;
 import my.flightdb.flightdbserver.service.FlightService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Slf4j
 @Component
-@Profile("default")
-public class TestDB implements CommandLineRunner {
+public class TestDB {
 
     @Autowired
     FlightService flightService;
@@ -24,10 +21,14 @@ public class TestDB implements CommandLineRunner {
     FlightDataService flightDataService;
 
     public static String TAIL1 = "XYZ01";
+    public static String DEP1 = "KOSU";
+    public static String ARR1 = "KOSU";
     public static final String TYPE1 = "Boeing 737";
     public static final LocalDateTime DATE1 = LocalDateTime.of(2007, 12, 31, 23, 59, 59);
 
     public static final String TAIL2 = "XYZ02";
+    public static String DEP2 = "KORD";
+    public static String ARR2 = "KCMH";
     public static final String TYPE2 = "Airbus 319";
     public static final LocalDateTime DATE2 = LocalDateTime.of(2016, 2, 29, 0, 0, 0);
 
@@ -54,12 +55,13 @@ public class TestDB implements CommandLineRunner {
     public static final double DATA_2_LAT_1 = 23.0;
     public static final double DATA_2_LNG_1 = 24.0;
 
-    @Override
-    public void run(String... args) {
-        log.info("TestDatabase.run");
+    public void createSharedDB() {
+        log.info("TestDB.createSharedDB");
 
         Flight f1 = new Flight();
         f1.setTailNumber(TAIL1);
+        f1.setDepartureAirport(DEP1);
+        f1.setArrivalAirport(ARR1);
         f1.setAircraftType(TYPE1);
         f1.setStartDateTime(DATE1);
         flightService.save(f1);
@@ -88,6 +90,8 @@ public class TestDB implements CommandLineRunner {
 
         Flight f2 = new Flight();
         f2.setTailNumber(TAIL2);
+        f2.setDepartureAirport(DEP2);
+        f2.setArrivalAirport(ARR2);
         f2.setAircraftType(TYPE2);
         f2.setStartDateTime(DATE2);
         flightService.save(f2);
@@ -108,5 +112,37 @@ public class TestDB implements CommandLineRunner {
         f3.setAircraftType(TYPE3);
         f3.setStartDateTime(DATE3);
         flightService.save(f3);
+    }
+
+    public void createPaginationDB() {
+        log.info("TestDB.createPaginationDB");
+
+        for (int i = 0; i < 20; i++) {
+            Flight flight = new Flight();
+            flight.setTailNumber("tail" + i);
+            flightService.save(flight);
+        }
+    }
+
+    public void createDistinctDB() {
+        log.info("TestDB.createDistinctDB");
+
+        Flight flight;
+
+        flight = new Flight();
+        flight.setTailNumber("tail1");
+        flightService.save(flight);
+
+        flight = new Flight();
+        flight.setTailNumber("tail2");
+        flightService.save(flight);
+
+        flight = new Flight();
+        flight.setTailNumber("tail2");
+        flightService.save(flight);
+
+        flight = new Flight();
+        flight.setTailNumber("tail3");
+        flightService.save(flight);
     }
 }

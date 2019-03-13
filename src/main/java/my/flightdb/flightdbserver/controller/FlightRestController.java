@@ -6,6 +6,8 @@ import my.flightdb.flightdbserver.model.SearchResult;
 import my.flightdb.flightdbserver.repository.FlightDataRepository;
 import my.flightdb.flightdbserver.service.FlightService;
 import my.flightdb.flightdbserver.service.FlightPredicate;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -32,8 +34,12 @@ public class FlightRestController {
         this.flightDataRepository = flightDataRepository;
     }
 
-    @RequestMapping(value="/search", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<SearchResult> search(@RequestParam MultiValueMap<String, String> allRequestParams) {
+    @RequestMapping(
+        value="/search",
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    public ResponseEntity<SearchResult> search(@RequestParam MultiValueMap<String, String> allRequestParams, Pageable pageable) {
         log.info("FlightRestController.search called");
 
         Predicate predicate = FlightPredicate.build(allRequestParams);
@@ -41,7 +47,7 @@ public class FlightRestController {
         if (count > 0) {
             SearchResult result = new SearchResult();
             result.setCount(count);
-            result.setFlights(flightService.search(predicate));
+            result.setFlights(flightService.search(predicate, pageable));
             return new ResponseEntity<>(result, HttpStatus.OK);
         }
         else {
@@ -49,7 +55,11 @@ public class FlightRestController {
         }
     }
 
-    @RequestMapping(value = "/aircraft_types", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(
+        value = "/aircraft_types",
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
     public ResponseEntity<Collection<String>> aircraftTypes() {
         log.info("FlightRestController.aircraftTypes called");
 
@@ -62,13 +72,51 @@ public class FlightRestController {
         }
     }
 
-    @RequestMapping(value = "/tail_numbers", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(
+        value = "/tail_numbers",
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
     public ResponseEntity<Collection<String>> tailNumbers() {
         log.info("FlightRestController.tailNumbers called");
 
         List<String> tailNos = flightService.findDistinctTailNumbers();
         if (tailNos.size() > 0) {
             return new ResponseEntity<>(tailNos, HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @RequestMapping(
+            value = "/departure_airports",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    public ResponseEntity<Collection<String>> departureAirports() {
+        log.info("FlightRestController.departureAirports called");
+
+        List<String> airports = flightService.findDistinctDepartureAirports();
+        if (airports.size() > 0) {
+            return new ResponseEntity<>(airports, HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @RequestMapping(
+            value = "/arrival_airports",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    public ResponseEntity<Collection<String>> arrivalAirports() {
+        log.info("FlightRestController.arrivalAirports called");
+
+        List<String> airports = flightService.findDistinctArrivalAirports();
+        if (airports.size() > 0) {
+            return new ResponseEntity<>(airports, HttpStatus.OK);
         }
         else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

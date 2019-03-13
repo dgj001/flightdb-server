@@ -3,6 +3,8 @@ package my.flightdb.flightdbserver.service;
 import com.querydsl.core.types.Predicate;
 import my.flightdb.flightdbserver.model.Flight;
 import my.flightdb.flightdbserver.repository.FlightRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -40,9 +42,9 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public List<Flight> search(Predicate predicate) {
+    public List<Flight> search(Predicate predicate, Pageable pageable) {
         List<Flight> flights = new ArrayList<>();
-        flightRepository.findAll(predicate).forEach(flights::add);
+        flightRepository.findAll(predicate, pageable).forEach(flights::add);
         return flights;
     }
 
@@ -54,5 +56,15 @@ public class FlightServiceImpl implements FlightService {
     @Override
     public List<String> findDistinctTailNumbers() {
         return flightRepository.findDistinctTailNumbers();
+    }
+
+    @Override
+    public List<String> findDistinctDepartureAirports() {
+        return flightRepository.findDistinctDepartureAirports();
+    }
+
+    @Override
+    public List<String> findDistinctArrivalAirports() {
+        return flightRepository.findDistinctArrivalAirports();
     }
 }

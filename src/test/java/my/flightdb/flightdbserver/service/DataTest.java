@@ -4,11 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import my.flightdb.flightdbserver.TestDB;
 import my.flightdb.flightdbserver.model.Flight;
 import my.flightdb.flightdbserver.model.FlightData;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Iterator;
 
@@ -16,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@Transactional
 @Slf4j
 public class DataTest {
 
@@ -24,6 +27,14 @@ public class DataTest {
 
     @Autowired
     FlightDataService flightDataService;
+
+    @Autowired
+    TestDB testDB;
+
+    @Before
+    public void createTestDB() {
+        testDB.createSharedDB();
+    }
 
     @Test
     public void countShouldBeValid() {
@@ -37,11 +48,15 @@ public class DataTest {
 
         Flight flight1 = iterator.next();
         assertEquals(TestDB.TAIL1, flight1.getTailNumber());
+        assertEquals(TestDB.DEP1, flight1.getDepartureAirport());
+        assertEquals(TestDB.ARR1, flight1.getArrivalAirport());
         assertEquals(TestDB.TYPE1, flight1.getAircraftType());
         assertEquals(TestDB.DATE1, flight1.getStartDateTime());
 
         Flight flight2 = iterator.next();
         assertEquals(TestDB.TAIL2, flight2.getTailNumber());
+        assertEquals(TestDB.DEP2, flight2.getDepartureAirport());
+        assertEquals(TestDB.ARR2, flight2.getArrivalAirport());
         assertEquals(TestDB.TYPE2, flight2.getAircraftType());
         assertEquals(TestDB.DATE2, flight2.getStartDateTime());
     }

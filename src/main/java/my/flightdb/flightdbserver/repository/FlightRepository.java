@@ -13,4 +13,10 @@ public interface FlightRepository extends PagingAndSortingRepository<Flight, Lon
 
     @Query("SELECT DISTINCT(f.tailNumber) FROM Flight f")
     List<String> findDistinctTailNumbers();
+
+    @Query("SELECT DISTINCT(f.departureAirport) FROM Flight f")
+    List<String> findDistinctDepartureAirports();
+
+    @Query("SELECT DISTINCT(f.arrivalAirport) FROM Flight f")
+    List<String> findDistinctArrivalAirports();
 }
