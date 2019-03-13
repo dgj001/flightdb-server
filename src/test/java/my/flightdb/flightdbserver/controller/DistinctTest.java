@@ -35,28 +35,16 @@ public class DistinctTest {
 
         Flight flight;
 
-        flight = new Flight();
-        flight.setTailNumber("tail1");
-        flight.setDepartureAirport("KORD");
-        flight.setArrivalAirport("K123");
+        flight = Flight.builder().tailNumber("tail1").departureAirport("KORD").arrivalAirport("K123").build();
         service.save(flight);
 
-        flight = new Flight();
-        flight.setTailNumber("tail2");
-        flight.setDepartureAirport("KORD");
-        flight.setArrivalAirport("K123");
+        flight = Flight.builder().tailNumber("tail2").departureAirport("KORD").arrivalAirport("K123").build();
         service.save(flight);
 
-        flight = new Flight();
-        flight.setTailNumber("tail2");
-        flight.setDepartureAirport("KORD");
-        flight.setArrivalAirport("");
+        flight = Flight.builder().tailNumber("tail2").departureAirport("KORD").arrivalAirport("").build();
         service.save(flight);
 
-        flight = new Flight();
-        flight.setTailNumber("tail3");
-        flight.setDepartureAirport("KCMH");
-        flight.setArrivalAirport("");
+        flight = Flight.builder().tailNumber("tail3").departureAirport("KCMH").arrivalAirport("").build();
         service.save(flight);
     }
 
