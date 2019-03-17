@@ -34,9 +34,6 @@ public class DistinctTest {
     @Autowired
     FlightService flightService;
 
-    @Autowired
-    GroupingService groupingService;
-
     private void loadFlightTable() {
         Flight flight;
 
@@ -53,21 +50,10 @@ public class DistinctTest {
         flightService.save(flight);
     }
 
-    private void loadGroupingTable() {
-        Grouping grouping;
-
-        grouping = Grouping.builder().fieldName("departureAirport").fieldValue("KORD").count(3).build();
-        groupingService.save(grouping);
-
-        grouping = Grouping.builder().fieldName("departureAirport").fieldValue("KCMH").count(1).build();
-        groupingService.save(grouping);
-    }
-
     @Before
     public void loadDistinctTestDB() {
         log.info("loadDistinctTestDB");
         loadFlightTable();
-        loadGroupingTable();
     }
 
     @Test
@@ -87,27 +73,6 @@ public class DistinctTest {
         Iterator<String> it = airports.iterator();
         assertEquals("KCMH", it.next());
         assertEquals("KORD", it.next());
-    }
-
-    @Test
-    public void shouldReturnDepartureGroupings() {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-
-        ResponseEntity<Collection<Grouping>> response = controller.departureAirportGroupings(PageRequest.of(0, 20));
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-
-        Collection<Grouping> groupings = response.getBody();
-        assertEquals(2, groupings.size());
-        Iterator<Grouping> it = groupings.iterator();
-        Grouping grouping = it.next();
-        assertEquals("departureAirport", grouping.fieldName);
-        assertEquals("KORD", grouping.fieldValue);
-        assertEquals(3, grouping.count);
-
-        grouping = it.next();
-        assertEquals("departureAirport", grouping.fieldName);
-        assertEquals("KCMH", grouping.fieldValue);
-        assertEquals(1, grouping.count);
     }
 
     @Test

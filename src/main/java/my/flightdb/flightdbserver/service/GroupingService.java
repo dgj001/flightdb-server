@@ -6,6 +6,6 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface GroupingService {
-    List<Grouping> findAll(Pageable pageable);
+    List<Grouping> findAll(String fieldName, Pageable pageable);
     Grouping save(Grouping object);
 }

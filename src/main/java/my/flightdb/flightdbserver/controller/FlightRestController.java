@@ -2,10 +2,12 @@ package my.flightdb.flightdbserver.controller;
 
 import com.querydsl.core.types.Predicate;
 import lombok.extern.slf4j.Slf4j;
+import my.flightdb.flightdbserver.model.Flight;
+import my.flightdb.flightdbserver.model.FlightData;
 import my.flightdb.flightdbserver.model.Grouping;
 import my.flightdb.flightdbserver.model.SearchResult;
 import my.flightdb.flightdbserver.repository.FlightDataRepository;
-import my.flightdb.flightdbserver.repository.GroupingRepository;
+import my.flightdb.flightdbserver.service.FlightDataService;
 import my.flightdb.flightdbserver.service.FlightService;
 import my.flightdb.flightdbserver.service.FlightPredicate;
 import my.flightdb.flightdbserver.service.GroupingService;
@@ -15,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,13 +32,13 @@ public class FlightRestController {
 
     FlightService flightService;
 
-    FlightDataRepository flightDataRepository;
+    FlightDataService flightDataService;
 
     GroupingService groupingService;
 
-    public FlightRestController(FlightService flightService, FlightDataRepository flightDataRepository, GroupingService groupingService) {
+    public FlightRestController(FlightService flightService, FlightDataService flightDataService, GroupingService groupingService) {
         this.flightService = flightService;
-        this.flightDataRepository = flightDataRepository;
+        this.flightDataService = flightDataService;
         this.groupingService = groupingService;
     }
 
@@ -54,23 +57,6 @@ public class FlightRestController {
             result.setCount(count);
             result.setFlights(flightService.search(predicate, pageable));
             return new ResponseEntity<>(result, HttpStatus.OK);
-        }
-        else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @RequestMapping(
-        value = "/aircraft_types",
-        method = RequestMethod.GET,
-        produces = MediaType.APPLICATION_JSON_UTF8_VALUE
-    )
-    public ResponseEntity<Collection<String>> aircraftTypes() {
-        log.info("FlightRestController.aircraftTypes called");
-
-        List<String> types = flightService.findDistinctAircraftTypes();
-        if (types.size() > 0) {
-            return new ResponseEntity<>(types, HttpStatus.OK);
         }
         else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -112,23 +98,6 @@ public class FlightRestController {
     }
 
     @RequestMapping(
-            value = "departure_airport_groupings",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
-    )
-    public ResponseEntity<Collection<Grouping>> departureAirportGroupings(Pageable pageable) {
-        log.info("FlightRestController.departureAirportGroupings called");
-
-        List<Grouping> groupings = groupingService.findAll(pageable);
-        if (groupings.size() > 0) {
-            return new ResponseEntity<>(groupings, HttpStatus.OK);
-        }
-        else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @RequestMapping(
             value = "/arrival_airports",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE
@@ -139,6 +108,28 @@ public class FlightRestController {
         List<String> airports = flightService.findDistinctArrivalAirports();
         if (airports.size() > 0) {
             return new ResponseEntity<>(airports, HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @RequestMapping(
+            value = "/{id}",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    public ResponseEntity<Flight> getFlightWithData(@PathVariable("id")Long id) {
+        log.info("FlightRestController.getFlightWithData called");
+
+        Flight flight = flightService.findById(id);
+        if (flight != null) {
+            log.info("flight.tailNumber: " + flight.getTailNumber());
+
+            flight.setRecords(flightDataService.findByFlightId(id));
+            log.info("records.size: " + flight.getRecords().size());
+
+            return new ResponseEntity<>(flight, HttpStatus.OK);
         }
         else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

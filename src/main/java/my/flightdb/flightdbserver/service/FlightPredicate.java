@@ -13,7 +13,7 @@ public class FlightPredicate {
     public static Predicate build(MultiValueMap<String, String> params) {
         BooleanBuilder searchBuilder = new BooleanBuilder();
 
-        String[] fields = { "aircraftType", "tailNumber" };
+        String[] fields = { "arrivalAirport", "tailNumber", "departureAirport" };
         for (String fld : fields) {
             if (params.containsKey(fld)) {
                 searchBuilder = searchBuilder.and(buildFlightOrPredicate(fld, params.get(fld)));

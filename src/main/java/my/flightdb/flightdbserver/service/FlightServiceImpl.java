@@ -5,6 +5,7 @@ import my.flightdb.flightdbserver.model.Flight;
 import my.flightdb.flightdbserver.repository.FlightRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,12 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
+    @Transactional
+    public Flight findById(Long id) {
+        return flightRepository.findById(id).orElse(null);
+    }
+
+    @Override
     public Flight save(Flight object) {
         return flightRepository.save(object);
     }
@@ -45,11 +52,6 @@ public class FlightServiceImpl implements FlightService {
         List<Flight> flights = new ArrayList<>();
         flightRepository.findAll(predicate, pageable).forEach(flights::add);
         return flights;
-    }
-
-    @Override
-    public List<String> findDistinctAircraftTypes() {
-        return flightRepository.findDistinctAircraftTypes();
     }
 
     @Override

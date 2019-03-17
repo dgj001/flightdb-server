@@ -1,15 +1,15 @@
 package my.flightdb.flightdbserver.controller;
 
 import my.flightdb.flightdbserver.TestDB;
+import my.flightdb.flightdbserver.model.Flight;
+import my.flightdb.flightdbserver.model.FlightData;
 import my.flightdb.flightdbserver.model.SearchResult;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -59,18 +59,6 @@ public class FlightRestControllerTest {
     }
 
     @Test
-    public void aircraftTypesShouldWork() {
-        ResponseEntity<Collection<String>> response = controller.aircraftTypes();
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        Collection<String> types = response.getBody();
-        assertEquals(3, types.size());
-        assertTrue(types.contains(TestDB.TYPE1));
-        assertTrue(types.contains(TestDB.TYPE2));
-        assertTrue(types.contains(TestDB.TYPE3));
-    }
-
-    @Test
     public void tailNumbersShouldWork() {
         ResponseEntity<Collection<String>> response = controller.tailNumbers();
 
@@ -80,5 +68,46 @@ public class FlightRestControllerTest {
         assertTrue(tailNos.contains(TestDB.TAIL1));
         assertTrue(tailNos.contains(TestDB.TAIL2));
         assertTrue(tailNos.contains(TestDB.TAIL3));
+    }
+
+    @Test
+    public void flightWithDataShouldWork() {
+        ResponseEntity<Flight> response = controller.getFlightWithData(0L);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+
+        response = controller.getFlightWithData(1L);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        Flight flight = response.getBody();
+
+        assertEquals(TestDB.TAIL1, flight.getTailNumber());
+        assertEquals(2, flight.getRecords().size());
+        FlightData flightData = flight.getRecords().get(0);
+        assertEquals(TestDB.DATA_1_ALT_1, flightData.getAltitude(), 0.0001);
+        assertEquals(TestDB.DATA_1_GS_1, flightData.getGroundSpeed(), 0.0001);
+        assertEquals(TestDB.DATA_1_LAT_1, flightData.getLatitude(), 0.0001);
+        assertEquals(TestDB.DATA_1_LNG_1, flightData.getLongitude(), 0.0001);
+        assertEquals(TestDB.DATA_1_TIME_1, flightData.getTime(), 0.0001);
+
+        flightData = flight.getRecords().get(1);
+        assertEquals(TestDB.DATA_1_ALT_2, flightData.getAltitude(), 0.0001);
+        assertEquals(TestDB.DATA_1_GS_2, flightData.getGroundSpeed(), 0.0001);
+        assertEquals(TestDB.DATA_1_LAT_2, flightData.getLatitude(), 0.0001);
+        assertEquals(TestDB.DATA_1_LNG_2, flightData.getLongitude(), 0.0001);
+        assertEquals(TestDB.DATA_1_TIME_2, flightData.getTime(), 0.0001);
+
+        response = controller.getFlightWithData(2L);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        flight = response.getBody();
+
+        assertEquals(TestDB.TAIL2, flight.getTailNumber());
+        assertEquals(1, flight.getRecords().size());
+        flightData = flight.getRecords().get(0);
+        assertEquals(TestDB.DATA_2_ALT_1, flightData.getAltitude(), 0.0001);
+        assertEquals(TestDB.DATA_2_GS_1, flightData.getGroundSpeed(), 0.0001);
+        assertEquals(TestDB.DATA_2_LAT_1, flightData.getLatitude(), 0.0001);
+        assertEquals(TestDB.DATA_2_LNG_1, flightData.getLongitude(), 0.0001);
+        assertEquals(TestDB.DATA_2_TIME_1, flightData.getTime(), 0.0001);
     }
 }

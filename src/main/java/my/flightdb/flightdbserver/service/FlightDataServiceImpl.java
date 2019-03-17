@@ -4,6 +4,9 @@ import my.flightdb.flightdbserver.model.FlightData;
 import my.flightdb.flightdbserver.repository.FlightDataRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class FlightDataServiceImpl implements FlightDataService {
     FlightDataRepository flightDataRepository;
@@ -13,8 +16,10 @@ public class FlightDataServiceImpl implements FlightDataService {
     }
 
     @Override
-    public Iterable<FlightData> findByFlightId(Long flightId) {
-        return flightDataRepository.findByFlightId(flightId);
+    public List<FlightData> findByFlightId(Long flightId) {
+        List<FlightData> records = new ArrayList<>();
+        flightDataRepository.findByFlightId(flightId).forEach(records::add);
+        return records;
     }
 
     @Override
