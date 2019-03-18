@@ -33,22 +33,22 @@ public class GroupingTest {
     public void loadGroupingTestDB() {
         Grouping grouping;
 
-        grouping = Grouping.builder().fieldName("departureAirport").fieldValue("KORD").count(3).build();
+        grouping = Grouping.builder().fieldName("departure_airport").fieldValue("KORD").count(3).build();
+        Grouping returnedGrouping = service.save(grouping);
+
+        grouping = Grouping.builder().fieldName("departure_airport").fieldValue("KCMH").count(1).build();
         service.save(grouping);
 
-        grouping = Grouping.builder().fieldName("departureAirport").fieldValue("KCMH").count(1).build();
+        grouping = Grouping.builder().fieldName("arrival_airport").fieldValue("ABC0").count(3).build();
         service.save(grouping);
 
-        grouping = Grouping.builder().fieldName("arrivalAirport").fieldValue("ABC0").count(3).build();
+        grouping = Grouping.builder().fieldName("arrival_airport").fieldValue("APT").count(4).build();
         service.save(grouping);
 
-        grouping = Grouping.builder().fieldName("arrivalAirport").fieldValue("APT").count(4).build();
+        grouping = Grouping.builder().fieldName("tail_number").fieldValue("XYZ01").count(1).build();
         service.save(grouping);
 
-        grouping = Grouping.builder().fieldName("tailNumber").fieldValue("XYZ01").count(1).build();
-        service.save(grouping);
-
-        grouping = Grouping.builder().fieldName("tailNumber").fieldValue("XYZ02").count(2).build();
+        grouping = Grouping.builder().fieldName("tail_number").fieldValue("XYZ02").count(2).build();
         service.save(grouping);
     }
 
@@ -61,12 +61,12 @@ public class GroupingTest {
         assertEquals(2, groupings.size());
         Iterator<Grouping> it = groupings.iterator();
         Grouping grouping = it.next();
-        assertEquals("departureAirport", grouping.fieldName);
+        assertEquals("departure_airport", grouping.fieldName);
         assertEquals("KORD", grouping.fieldValue);
         assertEquals(3, grouping.count);
 
         grouping = it.next();
-        assertEquals("departureAirport", grouping.fieldName);
+        assertEquals("departure_airport", grouping.fieldName);
         assertEquals("KCMH", grouping.fieldValue);
         assertEquals(1, grouping.count);
     }
@@ -80,12 +80,12 @@ public class GroupingTest {
         assertEquals(2, groupings.size());
         Iterator<Grouping> it = groupings.iterator();
         Grouping grouping = it.next();
-        assertEquals("arrivalAirport", grouping.fieldName);
+        assertEquals("arrival_airport", grouping.fieldName);
         assertEquals("ABC0", grouping.fieldValue);
         assertEquals(3, grouping.count);
 
         grouping = it.next();
-        assertEquals("arrivalAirport", grouping.fieldName);
+        assertEquals("arrival_airport", grouping.fieldName);
         assertEquals("APT", grouping.fieldValue);
         assertEquals(4, grouping.count);
     }
@@ -99,12 +99,12 @@ public class GroupingTest {
         assertEquals(2, groupings.size());
         Iterator<Grouping> it = groupings.iterator();
         Grouping grouping = it.next();
-        assertEquals("tailNumber", grouping.fieldName);
+        assertEquals("tail_number", grouping.fieldName);
         assertEquals("XYZ01", grouping.fieldValue);
         assertEquals(1, grouping.count);
 
         grouping = it.next();
-        assertEquals("tailNumber", grouping.fieldName);
+        assertEquals("tail_number", grouping.fieldName);
         assertEquals("XYZ02", grouping.fieldValue);
         assertEquals(2, grouping.count);
 

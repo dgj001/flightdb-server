@@ -52,10 +52,12 @@ public class FlightRestControllerTest {
     @Test
     public void shouldReturnEmptyResponse() {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("aircraftType", "non-existent type");
+        params.add("tailNumber", "non-existent type");
         ResponseEntity<SearchResult> response = controller.search(params, PageRequest.of(0, 20));
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        SearchResult result = response.getBody();
+        System.out.println("dummy");
     }
 
     @Test
@@ -75,7 +77,7 @@ public class FlightRestControllerTest {
         ResponseEntity<Flight> response = controller.getFlightWithData(0L);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 
-        response = controller.getFlightWithData(1L);
+        response = controller.getFlightWithData(TestDB.flightId1);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         Flight flight = response.getBody();
@@ -96,7 +98,7 @@ public class FlightRestControllerTest {
         assertEquals(TestDB.DATA_1_LNG_2, flightData.getLongitude(), 0.0001);
         assertEquals(TestDB.DATA_1_TIME_2, flightData.getTime(), 0.0001);
 
-        response = controller.getFlightWithData(2L);
+        response = controller.getFlightWithData(TestDB.flightId2);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         flight = response.getBody();

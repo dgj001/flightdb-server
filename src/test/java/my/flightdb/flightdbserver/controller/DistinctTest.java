@@ -2,21 +2,14 @@ package my.flightdb.flightdbserver.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import my.flightdb.flightdbserver.model.Flight;
-import my.flightdb.flightdbserver.model.Grouping;
 import my.flightdb.flightdbserver.service.FlightService;
-import my.flightdb.flightdbserver.service.GroupingService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -34,7 +27,9 @@ public class DistinctTest {
     @Autowired
     FlightService flightService;
 
-    private void loadFlightTable() {
+    @Before
+    public void loadDistinctTestDB() {
+        log.info("loadDistinctTestDB");
         Flight flight;
 
         flight = Flight.builder().tailNumber("tail1").departureAirport("KORD").arrivalAirport("K123").build();
@@ -48,12 +43,6 @@ public class DistinctTest {
 
         flight = Flight.builder().tailNumber("tail3").departureAirport("KCMH").arrivalAirport("").build();
         flightService.save(flight);
-    }
-
-    @Before
-    public void loadDistinctTestDB() {
-        log.info("loadDistinctTestDB");
-        loadFlightTable();
     }
 
     @Test
