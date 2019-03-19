@@ -1,7 +1,7 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/flightdb_dev
-    username: flightdb_dev_user
+    url: jdbc:mysql://localhost:3306/fdb_dev
+    username: fdb_dev_user
     password: ham22gonG
     platform: mysql
   jpa:
