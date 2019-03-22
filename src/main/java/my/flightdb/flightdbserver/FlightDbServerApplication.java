@@ -27,8 +27,9 @@ public class FlightDbServerApplication {
 		CorsConfiguration config = new CorsConfiguration();
 		config.setAllowCredentials(true);
 		List<String> hosts = new ArrayList<>();
-		hosts.add("http://localhost");
-		hosts.add("http://localhost:4200");
+//		hosts.add("http://localhost");
+//		hosts.add("http://localhost:4200");
+		hosts.add("*");
 		config.setAllowedOrigins(hosts);
 		config.setAllowedMethods(Collections.singletonList("*"));
 		config.setAllowedHeaders(Collections.singletonList("*"));

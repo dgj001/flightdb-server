@@ -1,11 +1,8 @@
 package my.flightdb.flightdbserver.controller;
 
-import com.querydsl.core.types.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import my.flightdb.flightdbserver.model.Grouping;
-import my.flightdb.flightdbserver.model.SearchResult;
 import my.flightdb.flightdbserver.repository.FlightDataRepository;
-import my.flightdb.flightdbserver.service.FlightPredicate;
 import my.flightdb.flightdbserver.service.FlightService;
 import my.flightdb.flightdbserver.service.GroupingService;
 import org.springframework.data.domain.Pageable;
@@ -13,10 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Collection;
 import java.util.List;
