@@ -73,6 +73,19 @@ public class FlightRestControllerTest {
     }
 
     @Test
+    public void flightWithoutDataShouldWork() {
+        ResponseEntity<Flight> response = controller.getFlightWithoutData(TestDB.flightId1);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        Flight flight = response.getBody();
+
+        assertEquals(TestDB.TAIL1, flight.getTailNumber());
+        assertEquals(TestDB.ARR1, flight.getArrivalAirport());
+        assertEquals(TestDB.DEP1, flight.getDepartureAirport());
+
+    }
+
+    @Test
     public void flightWithDataShouldWork() {
         ResponseEntity<Flight> response = controller.getFlightWithData(0L);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());

@@ -112,6 +112,24 @@ public class FlightRestController {
     }
 
     @RequestMapping(
+        value = "/{id}/no_records",
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    public ResponseEntity<Flight> getFlightWithoutData(@PathVariable("id") Long id) {
+        log.info("FlightRestController.getFlightWithoutData called");
+
+        Flight flight = flightService.findById(id);
+        if (flight != null) {
+            log.info(String.format("Get returning %s", flight.getTailNumber()));
+            return new ResponseEntity<>(flight, HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @RequestMapping(
             value = "/{id}",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE
@@ -121,11 +139,7 @@ public class FlightRestController {
 
         Flight flight = flightService.findById(id);
         if (flight != null) {
-            log.info("flight.tailNumber: " + flight.getTailNumber());
-
             flight.setRecords(flightDataService.findByFlightId(id));
-            log.info("records.size: " + flight.getRecords().size());
-
             return new ResponseEntity<>(flight, HttpStatus.OK);
         }
         else {
