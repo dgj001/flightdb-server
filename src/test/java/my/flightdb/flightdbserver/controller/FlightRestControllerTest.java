@@ -3,6 +3,7 @@ package my.flightdb.flightdbserver.controller;
 import my.flightdb.flightdbserver.TestDB;
 import my.flightdb.flightdbserver.model.Flight;
 import my.flightdb.flightdbserver.model.FlightData;
+import my.flightdb.flightdbserver.model.FlightDataResult;
 import my.flightdb.flightdbserver.model.SearchResult;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,15 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import java.util.Collection;
-
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Transactional
 public class FlightRestControllerTest {
+    private final double EPSILON = 0.0001;
 
     @Autowired
     TestDB testDB;
@@ -61,20 +60,8 @@ public class FlightRestControllerTest {
     }
 
     @Test
-    public void tailNumbersShouldWork() {
-        ResponseEntity<Collection<String>> response = controller.tailNumbers();
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        Collection<String> tailNos = response.getBody();
-        assertEquals(3, tailNos.size());
-        assertTrue(tailNos.contains(TestDB.TAIL1));
-        assertTrue(tailNos.contains(TestDB.TAIL2));
-        assertTrue(tailNos.contains(TestDB.TAIL3));
-    }
-
-    @Test
-    public void flightWithoutDataShouldWork() {
-        ResponseEntity<Flight> response = controller.getFlightWithoutData(TestDB.flightId1);
+    public void flightShouldWork() {
+        ResponseEntity<Flight> response = controller.getFlight(TestDB.flightId1);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         Flight flight = response.getBody();
@@ -86,43 +73,51 @@ public class FlightRestControllerTest {
     }
 
     @Test
-    public void flightWithDataShouldWork() {
-        ResponseEntity<Flight> response = controller.getFlightWithData(0L);
+    public void flightDataShouldWork() {
+        ResponseEntity<FlightDataResult> response = controller.getFlightData(0L);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 
-        response = controller.getFlightWithData(TestDB.flightId1);
+        response = controller.getFlightData(TestDB.flightId1);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        Flight flight = response.getBody();
+        FlightDataResult result = response.getBody();
 
-        assertEquals(TestDB.TAIL1, flight.getTailNumber());
-        assertEquals(2, flight.getRecords().size());
-        FlightData flightData = flight.getRecords().get(0);
-        assertEquals(TestDB.DATA_1_ALT_1, flightData.getAltitude(), 0.0001);
-        assertEquals(TestDB.DATA_1_GS_1, flightData.getGroundSpeed(), 0.0001);
-        assertEquals(TestDB.DATA_1_LAT_1, flightData.getLatitude(), 0.0001);
-        assertEquals(TestDB.DATA_1_LNG_1, flightData.getLongitude(), 0.0001);
-        assertEquals(TestDB.DATA_1_TIME_1, flightData.getTime(), 0.0001);
+        assertEquals(2, result.getRecords().size());
+        FlightData flightData = result.getRecords().get(0);
+        assertEquals(TestDB.DATA_1_ALT_1, flightData.getAltitude(), EPSILON);
+        assertEquals(TestDB.DATA_1_GS_1, flightData.getGroundSpeed(), EPSILON);
+        assertEquals(TestDB.DATA_1_LAT_1, flightData.getLatitude(), EPSILON);
+        assertEquals(TestDB.DATA_1_LNG_1, flightData.getLongitude(), EPSILON);
+        assertEquals(TestDB.DATA_1_TIME_1, flightData.getTime(), EPSILON);
 
-        flightData = flight.getRecords().get(1);
-        assertEquals(TestDB.DATA_1_ALT_2, flightData.getAltitude(), 0.0001);
-        assertEquals(TestDB.DATA_1_GS_2, flightData.getGroundSpeed(), 0.0001);
-        assertEquals(TestDB.DATA_1_LAT_2, flightData.getLatitude(), 0.0001);
-        assertEquals(TestDB.DATA_1_LNG_2, flightData.getLongitude(), 0.0001);
-        assertEquals(TestDB.DATA_1_TIME_2, flightData.getTime(), 0.0001);
+        flightData = result.getRecords().get(1);
+        assertEquals(TestDB.DATA_1_ALT_2, flightData.getAltitude(), EPSILON);
+        assertEquals(TestDB.DATA_1_GS_2, flightData.getGroundSpeed(), EPSILON);
+        assertEquals(TestDB.DATA_1_LAT_2, flightData.getLatitude(), EPSILON);
+        assertEquals(TestDB.DATA_1_LNG_2, flightData.getLongitude(), EPSILON);
+        assertEquals(TestDB.DATA_1_TIME_2, flightData.getTime(), EPSILON);
 
-        response = controller.getFlightWithData(TestDB.flightId2);
+        assertEquals(result.getMinLat(), 3.0, EPSILON);
+        assertEquals(result.getMaxLat(), 13.0, EPSILON);
+        assertEquals(result.getMinLng(), 4.0, EPSILON);
+        assertEquals(result.getMaxLng(), 14.0, EPSILON);
+
+        response = controller.getFlightData(TestDB.flightId2);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        flight = response.getBody();
+        result = response.getBody();
 
-        assertEquals(TestDB.TAIL2, flight.getTailNumber());
-        assertEquals(1, flight.getRecords().size());
-        flightData = flight.getRecords().get(0);
-        assertEquals(TestDB.DATA_2_ALT_1, flightData.getAltitude(), 0.0001);
-        assertEquals(TestDB.DATA_2_GS_1, flightData.getGroundSpeed(), 0.0001);
-        assertEquals(TestDB.DATA_2_LAT_1, flightData.getLatitude(), 0.0001);
-        assertEquals(TestDB.DATA_2_LNG_1, flightData.getLongitude(), 0.0001);
-        assertEquals(TestDB.DATA_2_TIME_1, flightData.getTime(), 0.0001);
+        assertEquals(1, result.getRecords().size());
+        flightData = result.getRecords().get(0);
+        assertEquals(TestDB.DATA_2_ALT_1, flightData.getAltitude(), EPSILON);
+        assertEquals(TestDB.DATA_2_GS_1, flightData.getGroundSpeed(), EPSILON);
+        assertEquals(TestDB.DATA_2_LAT_1, flightData.getLatitude(), EPSILON);
+        assertEquals(TestDB.DATA_2_LNG_1, flightData.getLongitude(), EPSILON);
+        assertEquals(TestDB.DATA_2_TIME_1, flightData.getTime(), EPSILON);
+
+        assertEquals(result.getMinLat(), 23.0, EPSILON);
+        assertEquals(result.getMaxLat(), 23.0, EPSILON);
+        assertEquals(result.getMinLng(), 24.0, EPSILON);
+        assertEquals(result.getMaxLng(), 24.0, EPSILON);
     }
 }

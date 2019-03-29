@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import my.flightdb.flightdbserver.TestDB;
 import my.flightdb.flightdbserver.model.Flight;
 import my.flightdb.flightdbserver.model.FlightData;
+import my.flightdb.flightdbserver.model.FlightDataResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 @Transactional
 @Slf4j
 public class DataTest {
+    private final double EPSILON = 0.0001;
 
     @Autowired
     FlightService flightService;
@@ -63,11 +65,13 @@ public class DataTest {
 
     @Test
     public void flightDataFieldsShouldBeValid() {
-        Iterator<FlightData> iterator = flightDataService.findByFlightId(TestDB.flightId1).iterator();
+        FlightDataResult result = flightDataService.findByFlightId(TestDB.flightId1, 1);
+
+        assertEquals(2, result.getRecords().size());
 
         FlightData data;
 
-        data = iterator.next();
+        data = result.getRecords().get(0);
         assertEquals(TestDB.flightId1, data.getFlightId());
         assertEquals(TestDB.DATA_1_TIME_1, data.getTime(), 0.001);
         assertEquals(TestDB.DATA_1_ALT_1, data.getAltitude(), 0.001);
@@ -75,16 +79,16 @@ public class DataTest {
         assertEquals(TestDB.DATA_1_LAT_1, data.getLatitude(), 0.001);
         assertEquals(TestDB.DATA_1_LNG_1, data.getLongitude(), 0.001);
 
-        data = iterator.next();
+        data = result.getRecords().get(1);
         assertEquals(TestDB.DATA_1_TIME_2, data.getTime(), 0.001);
         assertEquals(TestDB.DATA_1_ALT_2, data.getAltitude(), 0.001);
         assertEquals(TestDB.DATA_1_GS_2, data.getGroundSpeed(), 0.001);
         assertEquals(TestDB.DATA_1_LAT_2, data.getLatitude(), 0.001);
         assertEquals(TestDB.DATA_1_LNG_2, data.getLongitude(), 0.001);
 
-        iterator = flightDataService.findByFlightId(TestDB.flightId2).iterator();
+        result = flightDataService.findByFlightId(TestDB.flightId2, 1);
 
-        data = iterator.next();
+        data = result.getRecords().get(0);
         assertEquals(TestDB.flightId2, data.getFlightId());
         assertEquals(TestDB.DATA_2_TIME_1, data.getTime(), 0.001);
         assertEquals(TestDB.DATA_2_ALT_1, data.getAltitude(), 0.001);
@@ -92,4 +96,16 @@ public class DataTest {
         assertEquals(TestDB.DATA_2_LAT_1, data.getLatitude(), 0.001);
         assertEquals(TestDB.DATA_2_LNG_1, data.getLongitude(), 0.001);
     }
+
+    @Test
+    public void flightDataDownsampleShouldWork() {
+        FlightDataResult result = flightDataService.findByFlightId(TestDB.flightId3, 5);
+
+        assertEquals(3, result.getNumRecords());
+        assertEquals(3, result.getRecords().size());
+
+        assertEquals(TestDB.DATA_3_LAT_1, result.getRecords().get(0).getLatitude(), EPSILON);
+        assertEquals(TestDB.DATA_3_LAT_6, result.getRecords().get(1).getLatitude(), EPSILON);
+        assertEquals(TestDB.DATA_3_LAT_11, result.getRecords().get(2).getLatitude(), EPSILON);
+   }
 }

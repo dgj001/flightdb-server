@@ -55,6 +55,19 @@ public class TestDB {
     public static final double DATA_2_LAT_1 = 23.0;
     public static final double DATA_2_LNG_1 = 24.0;
 
+    public static Long flightId3;
+    public static final double DATA_3_LAT_1 = 1.0;
+    public static final double DATA_3_LAT_2 = 2.0;
+    public static final double DATA_3_LAT_3 = 3.0;
+    public static final double DATA_3_LAT_4 = 4.0;
+    public static final double DATA_3_LAT_5 = 5.0;
+    public static final double DATA_3_LAT_6 = 6.0;
+    public static final double DATA_3_LAT_7 = 7.0;
+    public static final double DATA_3_LAT_8 = 8.0;
+    public static final double DATA_3_LAT_9 = 9.0;
+    public static final double DATA_3_LAT_10 = 10.0;
+    public static final double DATA_3_LAT_11 = 11.0;
+
     public void createSharedDB() {
         log.info("TestDB.createSharedDB");
 
@@ -112,5 +125,17 @@ public class TestDB {
         f3.setAircraftType(TYPE3);
         f3.setStartDateTime(DATE3);
         flightService.save(f3);
+
+        flightId3 = f3.getId();
+
+        double[] lats = { DATA_3_LAT_1, DATA_3_LAT_2, DATA_3_LAT_3, DATA_3_LAT_4,
+                          DATA_3_LAT_5, DATA_3_LAT_6, DATA_3_LAT_7, DATA_3_LAT_8,
+                          DATA_3_LAT_9, DATA_3_LAT_10, DATA_3_LAT_11 };
+        for (double lat : lats) {
+            data = new FlightData();
+            data.setFlightId(flightId3);
+            data.setLatitude(lat);
+            flightDataService.save(data);
+        }
     }
 }

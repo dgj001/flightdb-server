@@ -3,6 +3,8 @@ package my.flightdb.flightdbserver.controller;
 import com.querydsl.core.types.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import my.flightdb.flightdbserver.model.Flight;
+import my.flightdb.flightdbserver.model.FlightData;
+import my.flightdb.flightdbserver.model.FlightDataResult;
 import my.flightdb.flightdbserver.model.SearchResult;
 import my.flightdb.flightdbserver.service.FlightDataService;
 import my.flightdb.flightdbserver.service.FlightService;
@@ -19,8 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Collection;
-import java.util.List;
 
 @Controller
 @Slf4j
@@ -61,63 +61,12 @@ public class FlightRestController {
     }
 
     @RequestMapping(
-        value = "/tail_numbers",
+        value = "/{id}",
         method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE
     )
-    public ResponseEntity<Collection<String>> tailNumbers() {
-        log.info("FlightRestController.tailNumbers called");
-
-        List<String> tailNos = flightService.findDistinctTailNumbers();
-        if (tailNos.size() > 0) {
-            return new ResponseEntity<>(tailNos, HttpStatus.OK);
-        }
-        else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @RequestMapping(
-            value = "/departure_airports",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
-    )
-    public ResponseEntity<Collection<String>> departureAirports() {
-        log.info("FlightRestController.departureAirports called");
-
-        List<String> airports = flightService.findDistinctDepartureAirports();
-        if (airports.size() > 0) {
-            return new ResponseEntity<>(airports, HttpStatus.OK);
-        }
-        else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @RequestMapping(
-            value = "/arrival_airports",
-            method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
-    )
-    public ResponseEntity<Collection<String>> arrivalAirports() {
-        log.info("FlightRestController.arrivalAirports called");
-
-        List<String> airports = flightService.findDistinctArrivalAirports();
-        if (airports.size() > 0) {
-            return new ResponseEntity<>(airports, HttpStatus.OK);
-        }
-        else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @RequestMapping(
-        value = "/{id}/no_records",
-        method = RequestMethod.GET,
-        produces = MediaType.APPLICATION_JSON_UTF8_VALUE
-    )
-    public ResponseEntity<Flight> getFlightWithoutData(@PathVariable("id") Long id) {
-        log.info("FlightRestController.getFlightWithoutData called");
+    public ResponseEntity<Flight> getFlight(@PathVariable("id") Long id) {
+        log.info("FlightRestController.getFlight called");
 
         Flight flight = flightService.findById(id);
         if (flight != null) {
@@ -129,18 +78,29 @@ public class FlightRestController {
     }
 
     @RequestMapping(
-            value = "/{id}",
+            value = "/{id}/flight_data",
             method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE
     )
-    public ResponseEntity<Flight> getFlightWithData(@PathVariable("id")Long id) {
-        log.info("FlightRestController.getFlightWithData called");
+    public ResponseEntity<FlightDataResult> getFlightData(@PathVariable("id")Long id) {
+        log.info("FlightRestController.getFlightData called");
+        return getFlightDataDownSample(id, 1);
+    }
 
-        Flight flight = flightService.findById(id);
-        if (flight != null) {
-            flight.setRecords(flightDataService.findByFlightId(id));
-            log.info("..records loaded");
-            return new ResponseEntity<>(flight, HttpStatus.OK);
+
+    @RequestMapping(
+            value = "/{id}/flight_data/{downsample}",
+            method = RequestMethod.GET,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    public ResponseEntity<FlightDataResult> getFlightDataDownSample(
+            @PathVariable("id")Long id,
+            @PathVariable("downsample")int everyN) {
+        log.info("FlightRestController.getFlightDataDownSample called");
+
+        FlightDataResult result = flightDataService.findByFlightId(id, everyN);
+        if (result.getRecords().size() > 0) {
+            return new ResponseEntity<>(result, HttpStatus.OK);
         }
         else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

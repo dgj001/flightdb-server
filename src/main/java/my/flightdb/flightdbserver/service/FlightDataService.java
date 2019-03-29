@@ -1,10 +1,9 @@
 package my.flightdb.flightdbserver.service;
 
 import my.flightdb.flightdbserver.model.FlightData;
-
-import java.util.List;
+import my.flightdb.flightdbserver.model.FlightDataResult;
 
 public interface FlightDataService {
-    List<FlightData> findByFlightId(Long flightId);
+    FlightDataResult findByFlightId(Long flightId, int everyN);
     FlightData save(FlightData object);
 }
