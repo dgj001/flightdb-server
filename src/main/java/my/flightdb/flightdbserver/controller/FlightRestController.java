@@ -121,7 +121,6 @@ public class FlightRestController {
 
         Flight flight = flightService.findById(id);
         if (flight != null) {
-            log.info(String.format("Get returning %s", flight.getTailNumber()));
             return new ResponseEntity<>(flight, HttpStatus.OK);
         }
         else {
