@@ -139,6 +139,7 @@ public class FlightRestController {
         Flight flight = flightService.findById(id);
         if (flight != null) {
             flight.setRecords(flightDataService.findByFlightId(id));
+            log.info("..records loaded");
             return new ResponseEntity<>(flight, HttpStatus.OK);
         }
         else {
